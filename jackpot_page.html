@@ -18,7 +18,7 @@
             justify-content: center;
             align-items: flex-start; /* Changed to flex-start to align to top */
             min-height: 100vh;
-            padding: 1rem 0; /* Reduced top and bottom padding */
+            padding: 0; /* Removed all padding from body */
             margin: 0;
             background: #000; /* Default background, can be transparent if embedded */
         }
@@ -106,7 +106,7 @@
     </style>
 </head>
 <body>
-    <div class="w-full max-w-4xl mx-auto p-4 rounded-lg shadow-lg bg-gray-800 border border-gray-700">
+    <div class="w-full max-w-4xl mx-auto p-4 rounded-lg shadow-lg bg-gray-800 border border-gray-700 pb-4"> <!-- Added pb-4 for bottom padding -->
         <!-- The new jackpot section -->
         <div class="jackpot-section mb-6">
             <div class="section-title">🏆 แจ็คพอตล่าสุด 🏆</div>
@@ -131,7 +131,7 @@
         </div>
         <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
             <!-- Image cycling in place of date dropdowns -->
-            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-cover cursor-pointer w-full h-auto max-w-full">
+            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-cover cursor-pointer w-full h-32 sm:h-40 md:h-48">
         </div>
         <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
@@ -280,12 +280,10 @@
         }
 
         // Get DOM elements
-        // Removed headerTitle as it's no longer used for dynamic text
         var depositTab = document.getElementById('deposit-tab');
         var withdrawTab = document.getElementById('withdraw-tab');
         var rankingList = document.getElementById('ranking-list');
-        var cyclingImage = document.getElementById('cycling-image'); // New: Get cycling image element
-        // Removed selectedMonthDropdown and selectedYearDropdown
+        var cyclingImage = document.getElementById('cycling-image'); // Get cycling image element
 
         // Set initial active tab to 'withdraw'
         var activeTab = 'withdraw'; 
@@ -331,15 +329,14 @@
 
         // Function to update the header title and tab styles
         function updateUI() {
-            if (!depositTab || !withdrawTab) { // Removed headerTitle from check
+            if (!depositTab || !withdrawTab) { 
                 console.error('Iframe Error: One or more UI elements not found!');
                 return;
             }
 
             // Generate/retrieve data based on current active tab
-            var currentRankingData = generateRankingData(activeTab); // Removed date parameters
+            var currentRankingData = generateRankingData(activeTab); 
 
-            // No headerTitle.textContent update needed here
             if (activeTab === 'deposit') {
                 depositTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
                 depositTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
