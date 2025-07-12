@@ -131,9 +131,7 @@
         </div>
         <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
             <!-- Image cycling in place of date dropdowns -->
-            <div class="relative w-full rounded-md overflow-hidden" style="padding-bottom: 50%;"> <!-- 2:1 Aspect Ratio Container -->
-                <img id="cycling-image" src="" alt="Cycling Image" class="absolute inset-0 w-full h-full object-contain cursor-pointer">
-            </div>
+            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-contain cursor-pointer w-full h-40 sm:h-48 md:h-56 lg:h-64">
         </div>
         <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
@@ -231,7 +229,7 @@
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(), // Corrected typo here
+                        username: generateRandomUsername(), 
                         amount: generateRandomAmount(100, 1000, isDepositTab) // Pass isDepositTab
                     });
                 }
@@ -242,7 +240,7 @@
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(), // Corrected typo here
+                        username: generateRandomUsername(), 
                         amount: generateRandomAmount(1100, 9999, isDepositTab) // Pass isDepositTab
                     });
                 }
@@ -253,7 +251,7 @@
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(), // Corrected typo here
+                        username: generateRandomUsername(), 
                         amount: generateRandomAmount(10000, 100000, isDepositTab) // Pass isDepositTab
                     });
                 }
