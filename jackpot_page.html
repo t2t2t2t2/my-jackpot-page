@@ -110,9 +110,27 @@
         }
 
         // Function to generate a random amount within a range, formatted
-        function generateRandomAmount(min, max) {
-            var amount = (Math.random() * (max - min) + min).toFixed(2);
-            return parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        function generateRandomAmount(min, max, isDepositTab) { // Added isDepositTab parameter
+            var amount = (Math.random() * (max - min) + min);
+
+            if (isDepositTab) { // Apply specific rounding for deposit tab
+                if (amount < 1000) {
+                    // For amounts under 1000, round to nearest 10
+                    amount = Math.round(amount / 10) * 10;
+                } else {
+                    // For amounts 1000 or above, round to nearest 100
+                    amount = Math.round(amount / 100) * 100;
+                }
+                
+                // Ensure it stays within the specified range after rounding
+                amount = Math.max(min, Math.min(max, amount));
+            }
+            
+            // Format without decimals for deposit, with 2 decimals for withdrawal
+            return parseFloat(amount).toLocaleString('en-US', { 
+                minimumFractionDigits: isDepositTab ? 0 : 2, 
+                maximumFractionDigits: isDepositTab ? 0 : 2 
+            });
         }
 
         // Function to generate ranking data based on custom amount ranges, with caching
@@ -153,6 +171,7 @@
                 console.log('Generating new data for ' + activeTab + ' on ' + selectedDay + '/' + selectedMonth + '/' + selectedYear);
                 var data = [];
                 var totalItems = 10; // Fixed to 10 items as per "TOP 10" and removed filter count dropdown
+                var isDepositTab = (activeTab === 'deposit'); // Determine if it's the deposit tab
 
                 // Distribute items based on percentages for 10 items
                 var countRange1 = 3; // 3 items for 100-1000
@@ -165,7 +184,7 @@
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
                         username: generateRandomUsername(),
-                        amount: generateRandomAmount(100, 1000)
+                        amount: generateRandomAmount(100, 1000, isDepositTab) // Pass isDepositTab
                     });
                 }
 
@@ -175,7 +194,7 @@
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
                         username: generateRandomUsername(),
-                        amount: generateRandomAmount(1100, 9999)
+                        amount: generateRandomAmount(1100, 9999, isDepositTab) // Pass isDepositTab
                     });
                 }
 
@@ -185,7 +204,7 @@
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
                         username: generateRandomUsername(),
-                        amount: generateRandomAmount(10000, 100000)
+                        amount: generateRandomAmount(10000, 100000, isDepositTab) // Pass isDepositTab
                     });
                 }
 
@@ -215,7 +234,6 @@
         var depositTab = document.getElementById('deposit-tab');
         var withdrawTab = document.getElementById('withdraw-tab');
         var rankingList = document.getElementById('ranking-list');
-        // Removed filterCountDropdown
         var selectedDayDropdown = document.getElementById('selected-day');
         var selectedMonthDropdown = document.getElementById('selected-month');
         var selectedYearDropdown = document.getElementById('selected-year');
@@ -306,8 +324,6 @@
                 updateUI();
             });
         }
-
-        // Removed Event listener for filterCountDropdown
 
         // Event listeners for date filter dropdowns (Day, Month, Year)
         if (selectedDayDropdown) {
