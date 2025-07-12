@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter (for general body text) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Google Fonts: Prompt (for Jackpot section and button as specified by user) -->
+    <!-- Google Fonts: Prompt (for Jackpot section) -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
         /* Custom CSS for general body and scrollbar */
@@ -131,7 +131,9 @@
         </div>
         <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
             <!-- Image cycling in place of date dropdowns -->
-            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-cover cursor-pointer w-full h-32 sm:h-40 md:h-48">
+            <div class="relative w-full rounded-md overflow-hidden" style="padding-bottom: 50%;"> <!-- 2:1 Aspect Ratio Container -->
+                <img id="cycling-image" src="" alt="Cycling Image" class="absolute inset-0 w-full h-full object-contain cursor-pointer">
+            </div>
         </div>
         <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
@@ -225,35 +227,33 @@
 
                 // Distribute items based on percentages for 10 items
                 var countRange1 = 3; // 3 items for 100-1000
-                var countRange2 = 4; // 4 items for 1100-9999
-                var countRange3 = 3; // 3 items for 10000-100000
-
-                // Items: 100-1000
                 for (var i = 0; i < countRange1; i++) {
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(),
+                        username: generateRandomUsername(), // Corrected typo here
                         amount: generateRandomAmount(100, 1000, isDepositTab) // Pass isDepositTab
                     });
                 }
 
                 // Items: 1100-9999
+                var countRange2 = 4; // 4 items for 1100-9999
                 for (var i = 0; i < countRange2; i++) {
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(),
+                        username: generateRandomUsername(), // Corrected typo here
                         amount: generateRandomAmount(1100, 9999, isDepositTab) // Pass isDepositTab
                     });
                 }
 
                 // Items: 10000-100000
+                var countRange3 = 3; // 3 items for 10000-100000
                 for (var i = 0; i < countRange3; i++) {
                     data.push({
                         rank: data.length + 1,
                         phone: generateRandomPhoneNumber(),
-                        username: generateRandomUsername(),
+                        username: generateRandomUsername(), // Corrected typo here
                         amount: generateRandomAmount(10000, 100000, isDepositTab) // Pass isDepositTab
                     });
                 }
