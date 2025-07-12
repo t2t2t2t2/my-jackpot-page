@@ -55,6 +55,10 @@
                 <option value="50">50</option>
                 <option value="100">100</option>
             </select>
+            <select id="selected-day" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-24">
+                <option value="">--Select Day--</option>
+                <!-- Days will be populated by JavaScript -->
+            </select>
             <select id="selected-month" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-32">
                 <option value="">--Select Month--</option>
                 <option value="1">January</option>
@@ -86,33 +90,154 @@
     </div>
     <script>
         console.log('Iframe Script started executing.');
-        var rankingData = [
-            { rank: 1, phone: '0636469XXX', username: 'fap1t8m25', amount: '4,442.00' },
-            { rank: 2, phone: '0839791XXX', username: 'fap1t8m97', amount: '3,500.00' },
-            { rank: 3, phone: '0661501XXX', username: 'fap1t8m122', amount: '2,278.00' },
-            { rank: 4, phone: '0925863XXX', username: 'fap1t8m2', amount: '2,200.00' },
-            { rank: 5, phone: '0930472XXX', username: 'fap1t8m23', amount: '1,590.00' },
-            { rank: 6, phone: '0812636XXX', username: 'fap1t8m148', amount: '1,104.00' },
-            { rank: 7, phone: '0972480XXX', username: 'fap1t8m121', amount: '1,027.00' },
-            { rank: 8, phone: '0961628XXX', username: 'fap1t8m78', amount: '940.00' },
-            { rank: 9, phone: '0985024XXX', username: 'fap1t8m61', amount: '900.00' },
-            { rank: 10, phone: '0935269XXX', username: 'fap1t8m123', amount: '800.00' }
-        ];
+
+        // Constants for localStorage caching
+        var LOCAL_STORAGE_KEY_PREFIX = 'top10RankingData_'; // Prefix for data key
+        var LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX = 'top10RankingDataTimestamp_'; // Prefix for timestamp key
+        var CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+        // Function to generate a random phone number with specified prefix and length
+        function generateRandomPhoneNumber() {
+            var prefixes = ['06', '08', '09'];
+            var randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            var remainingDigits = '';
+            // Generate 5 more digits to make it 7 digits before XXX
+            for (var i = 0; i < 5; i++) {
+                remainingDigits += Math.floor(Math.random() * 10);
+            }
+            return randomPrefix + remainingDigits + 'XXX'; // Mask last 3 digits for privacy
+        }
+
+        // Function to generate a random username (ID)
+        function generateRandomUsername() {
+            var randomNum = Math.floor(Math.random() * 900) + 100; // Generates a random number between 100 and 999
+            return 'fap1t8m' + randomNum; // Appends the random number to 'fap1t8m'
+        }
+
+        // Function to generate a random amount within a range, formatted
+        function generateRandomAmount(min, max) {
+            var amount = (Math.random() * (max - min) + min).toFixed(2);
+            return parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Function to generate ranking data based on custom amount ranges, with caching
+        function generateRankingData(activeTab, selectedDay, selectedMonth, selectedYear) {
+            // Create unique cache key based on selected filters and active tab
+            var currentCacheKey = LOCAL_STORAGE_KEY_PREFIX + activeTab + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay;
+            var currentTimestampKey = LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX + activeTab + '_' + selectedYear + '_' + selectedMonth + '_' + selectedDay;
+
+            var cachedData = localStorage.getItem(currentCacheKey);
+            var cachedTimestamp = localStorage.getItem(currentTimestampKey);
+            var now = new Date().getTime();
+
+            // --- NEW LOGIC START: Check for future date ---
+            var today = new Date();
+            var todayYear = today.getFullYear();
+            var todayMonth = today.getMonth() + 1; // Month is 0-indexed
+            var todayDay = today.getDate();
+
+            // Create Date objects for comparison (Month is 0-indexed in Date constructor)
+            var selectedDate = new Date(selectedYear, selectedMonth - 1, selectedDay);
+            var actualTodayDate = new Date(todayYear, todayMonth - 1, todayDay);
+
+            // If the selected date is in the future, return empty data
+            if (selectedDate.getTime() > actualTodayDate.getTime()) {
+                console.log('Selected date is in the future (' + selectedDay + '/' + selectedMonth + '/' + selectedYear + '). No data will be displayed.');
+                // Clear any existing cache for this future date to prevent stale data from showing up later
+                localStorage.removeItem(currentCacheKey);
+                localStorage.removeItem(currentTimestampKey);
+                return []; // Return empty array for future dates
+            }
+            // --- NEW LOGIC END ---
+
+            // Check if cached data exists and is still valid for this specific date/tab
+            if (cachedData && cachedTimestamp && (now - parseInt(cachedTimestamp) < CACHE_DURATION_MS)) {
+                console.log('Using cached data for ' + activeTab + ' on ' + selectedDay + '/' + selectedMonth + '/' + selectedYear);
+                return JSON.parse(cachedData);
+            } else {
+                console.log('Generating new data for ' + activeTab + ' on ' + selectedDay + '/' + selectedMonth + '/' + selectedYear);
+                var data = [];
+                var totalItems = 100; // Generate 100 items to cover all filter options
+
+                // Distribute items based on percentages for 100 items
+                var countRange1 = Math.round(totalItems * 0.3); // 30% for 100-1000
+                var countRange2 = Math.round(totalItems * 0.4); // 40% for 1100-9999
+                var countRange3 = totalItems - countRange1 - countRange2; // Remaining for 10000-100000
+
+                // Items: 100-1000
+                for (var i = 0; i < countRange1; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(100, 1000)
+                    });
+                }
+
+                // Items: 1100-9999
+                for (var i = 0; i < countRange2; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(1100, 9999)
+                    });
+                }
+
+                // Items: 10000-100000
+                for (var i = 0; i < countRange3; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(10000, 100000)
+                    });
+                }
+
+                // Shuffle the array to mix the ranks, so specific ranges don't always appear at the top/bottom
+                for (var i = data.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = data[i];
+                    data[i] = data[j];
+                    data[j] = temp;
+                }
+
+                // Re-assign ranks after shuffling to ensure they are 1-100
+                for (var i = 0; i < data.length; i++) {
+                    data[i].rank = i + 1;
+                }
+
+                // Store new data and timestamp in localStorage with the specific key
+                localStorage.setItem(currentCacheKey, JSON.stringify(data));
+                localStorage.setItem(currentTimestampKey, now.toString());
+                
+                return data;
+            }
+        }
+
+        // Get DOM elements
         var headerTitle = document.getElementById('header-title');
         var depositTab = document.getElementById('deposit-tab');
         var withdrawTab = document.getElementById('withdraw-tab');
         var rankingList = document.getElementById('ranking-list');
-        var selectedYearDropdown = document.getElementById('selected-year');
+        var filterCountDropdown = document.getElementById('filter-count');
+        var selectedDayDropdown = document.getElementById('selected-day');
         var selectedMonthDropdown = document.getElementById('selected-month');
-        var activeTab = 'deposit';
-        function renderRankingList() {
+        var selectedYearDropdown = document.getElementById('selected-year');
+
+        var activeTab = 'deposit'; // Initial active tab
+
+        // Function to render the ranking list based on provided data
+        function renderRankingList(data) {
             if (!rankingList) {
                 console.error('Iframe Error: rankingList element not found!');
                 return;
             }
-            rankingList.innerHTML = '';
-            for (var i = 0; i < rankingData.length; i++) {
-                var item = rankingData[i];
+            rankingList.innerHTML = ''; // Clear existing list
+            // Use the selected filter count to limit the displayed items
+            var displayCount = parseInt(filterCountDropdown.value);
+            for (var i = 0; i < Math.min(data.length, displayCount); i++) { // Limit display to selected count
+                var item = data[i];
                 var rankColorClass = '';
                 if (item.rank === 1) {
                     rankColorClass = 'bg-yellow-500';
@@ -123,6 +248,7 @@
                 } else {
                     rankColorClass = 'bg-gray-600';
                 }
+
                 var itemHtml =
                     '<div class="flex justify-between items-center border-b border-gray-600 py-2 last:border-b-0">' +
                         '<div class="flex items-center">' +
@@ -139,61 +265,152 @@
                 rankingList.insertAdjacentHTML('beforeend', itemHtml);
             }
         }
+
+        // Function to update the header title and tab styles
         function updateUI() {
-            if (!headerTitle || !depositTab || !withdrawTab) {
-                console.error('Iframe Error: Header or tab elements not found!');
+            if (!headerTitle || !depositTab || !withdrawTab || !filterCountDropdown || !selectedMonthDropdown || !selectedYearDropdown || !selectedDayDropdown) {
+                console.error('Iframe Error: One or more UI elements not found!');
                 return;
             }
+
+            var currentDay = selectedDayDropdown.value;
+            var currentMonth = selectedMonthDropdown.value;
+            var currentYear = selectedYearDropdown.value;
+
+            // Generate/retrieve data based on current active tab and date filters
+            var currentRankingData = generateRankingData(activeTab, currentDay, currentMonth, currentYear);
+
             if (activeTab === 'deposit') {
                 headerTitle.textContent = 'TOP 10 ยอดฝากสูงสุด';
                 depositTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
                 depositTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
                 withdrawTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
                 withdrawTab.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                renderRankingList(currentRankingData); // Use the generated/cached data
             } else {
                 headerTitle.textContent = 'TOP 10 ยอดถอนสูงสุด';
                 withdrawTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
                 withdrawTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
                 depositTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
                 depositTab.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                renderRankingList(currentRankingData); // Use the generated/cached data
             }
-            renderRankingList();
         }
+
+        // Event listeners for tabs
         if (depositTab) {
             depositTab.addEventListener('click', function() {
                 activeTab = 'deposit';
+                // No need to clear cache here, generateRankingData will handle it based on key
                 updateUI();
             });
         }
+
         if (withdrawTab) {
             withdrawTab.addEventListener('click', function() {
                 activeTab = 'withdraw';
+                // No need to clear cache here, generateRankingData will handle it based on key
                 updateUI();
             });
         }
-        function populateYears() {
-            if (!selectedYearDropdown) {
-                console.error('Iframe Error: selectedYearDropdown element not found!');
-                return;
-            }
-            var currentYear = new Date().getFullYear();
-            var years = [];
-            for (var i = 0; i < 8; i++) {
-                years.push(currentYear - 3 + i);
-            }
-            selectedYearDropdown.innerHTML = '';
-            for (var j = 0; j < years.length; j++) {
-                var year = years[j];
-                var option = document.createElement('option');
-                option.value = year;
-                option.textContent = year;
-                selectedYearDropdown.appendChild(option);
-            }
-            selectedYearDropdown.value = currentYear;
+
+        // Event listener for filter count dropdown
+        if (filterCountDropdown) {
+            filterCountDropdown.addEventListener('change', function() {
+                // Changing filter count implies new data, so force new cache key
+                // This will effectively create a new cache key that includes the filter count
+                // and thus trigger new data generation.
+                // We'll just let updateUI call generateRankingData with current filter count,
+                // which will naturally lead to a new cache key if filter count is part of it.
+                // For now, the cache key only includes date and tab.
+                // If you want filter count to also force new random data, you'd need to
+                // include it in the cache key generation in generateRankingData.
+                // For simplicity, for now, changing filter count will just re-render
+                // the existing cached data (if valid) or new data (if cache expired).
+                // To force new data on filterCount change, we need to explicitly clear cache.
+                // The cache key now includes day, month, year, and tab, so changing filterCount
+                // will not automatically invalidate the cache for the date.
+                // We need to explicitly remove the cache for the current date/tab combination.
+                var currentDay = selectedDayDropdown.value;
+                var currentMonth = selectedMonthDropdown.value;
+                var currentYear = selectedYearDropdown.value;
+                var currentCacheKey = LOCAL_STORAGE_KEY_PREFIX + activeTab + '_' + currentYear + '_' + currentMonth + '_' + currentDay;
+                var currentTimestampKey = LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX + activeTab + '_' + currentYear + '_' + currentMonth + '_' + currentDay;
+
+                localStorage.removeItem(currentCacheKey);
+                localStorage.removeItem(currentTimestampKey);
+                updateUI();
+            });
         }
+
+        // Event listeners for date filter dropdowns (Day, Month, Year)
+        // These will NOT clear the cache directly, allowing the 15-minute cache to work
+        // for the specific date/tab combination.
+        if (selectedDayDropdown) {
+            selectedDayDropdown.addEventListener('change', updateUI);
+        }
+        if (selectedMonthDropdown) {
+            selectedMonthDropdown.addEventListener('change', updateUI);
+        }
+        if (selectedYearDropdown) {
+            selectedYearDropdown.addEventListener('change', updateUI);
+        }
+
+        // Populate date filters (Day, Month, Year)
+        function populateDateFilters() {
+            var currentDate = new Date();
+            var currentDay = currentDate.getDate();
+            var currentMonth = currentDate.getMonth() + 1; // Month is 0-indexed
+            var currentYear = currentDate.getFullYear();
+
+            // Populate Days
+            if (selectedDayDropdown) {
+                selectedDayDropdown.innerHTML = '<option value="">--Select Day--</option>'; // Clear existing options
+                for (var i = 1; i <= 31; i++) {
+                    var option = document.createElement('option');
+                    option.value = i;
+                    option.textContent = i;
+                    selectedDayDropdown.appendChild(option);
+                }
+                selectedDayDropdown.value = currentDay; // Set default to current day
+            } else {
+                console.error('Iframe Error: selectedDayDropdown element not found!');
+            }
+
+            // Populate Years (existing logic)
+            if (selectedYearDropdown) {
+                var years = [];
+                for (var i = 0; i < 8; i++) {
+                    years.push(currentYear - 3 + i);
+                }
+                selectedYearDropdown.innerHTML = ''; // Clear existing options
+                for (var j = 0; j < years.length; j++) {
+                    var year = years[j];
+                    var option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    selectedYearDropdown.appendChild(option);
+                }
+                selectedYearDropdown.value = currentYear; // Set default to current year
+            } else {
+                console.error('Iframe Error: selectedYearDropdown element not found!');
+            }
+
+            // Set default month (already set in HTML, but can be set here too if needed)
+            if (selectedMonthDropdown) {
+                // Ensure the default month is set if not already in HTML
+                if (!selectedMonthDropdown.value) {
+                    selectedMonthDropdown.value = currentMonth;
+                }
+            } else {
+                console.error('Iframe Error: selectedMonthDropdown element not found!');
+            }
+        }
+
+        // Initial render on page load
         document.addEventListener('DOMContentLoaded', function() {
-            populateYears();
-            updateUI();
+            populateDateFilters(); // Call the new function
+            updateUI(); // Initial UI setup
         });
     </script>
 </body>
