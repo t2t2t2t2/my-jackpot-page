@@ -48,18 +48,13 @@
                 </div>
             </div>
         </div>
-        <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-col lg:flex-row justify-center items-center gap-2">
-            <select id="filter-count" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-24">
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-            <select id="selected-day" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-24">
+        <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
+            <!-- Removed filter-count dropdown -->
+            <select id="selected-day" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto lg:w-24">
                 <option value="">--Select Day--</option>
                 <!-- Days will be populated by JavaScript -->
             </select>
-            <select id="selected-month" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-32">
+            <select id="selected-month" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto lg:w-32">
                 <option value="">--Select Month--</option>
                 <option value="1">January</option>
                 <option value="2">February</option>
@@ -74,7 +69,7 @@
                 <option value="11">November</option>
                 <option value="12">December</option>
             </select>
-            <select id="selected-year" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full lg:w-28">
+            <select id="selected-year" class="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 w-auto lg:w-28">
                 <!-- Years will be populated by JavaScript -->
             </select>
         </div>
@@ -130,7 +125,7 @@
             var cachedTimestamp = localStorage.getItem(currentTimestampKey);
             var now = new Date().getTime();
 
-            // --- NEW LOGIC START: Check for future date ---
+            // --- Check for future date ---
             var today = new Date();
             var todayYear = today.getFullYear();
             var todayMonth = today.getMonth() + 1; // Month is 0-indexed
@@ -148,7 +143,7 @@
                 localStorage.removeItem(currentTimestampKey);
                 return []; // Return empty array for future dates
             }
-            // --- NEW LOGIC END ---
+            // --- End future date check ---
 
             // Check if cached data exists and is still valid for this specific date/tab
             if (cachedData && cachedTimestamp && (now - parseInt(cachedTimestamp) < CACHE_DURATION_MS)) {
@@ -157,12 +152,12 @@
             } else {
                 console.log('Generating new data for ' + activeTab + ' on ' + selectedDay + '/' + selectedMonth + '/' + selectedYear);
                 var data = [];
-                var totalItems = 100; // Generate 100 items to cover all filter options
+                var totalItems = 10; // Fixed to 10 items as per "TOP 10" and removed filter count dropdown
 
-                // Distribute items based on percentages for 100 items
-                var countRange1 = Math.round(totalItems * 0.3); // 30% for 100-1000
-                var countRange2 = Math.round(totalItems * 0.4); // 40% for 1100-9999
-                var countRange3 = totalItems - countRange1 - countRange2; // Remaining for 10000-100000
+                // Distribute items based on percentages for 10 items
+                var countRange1 = 3; // 3 items for 100-1000
+                var countRange2 = 4; // 4 items for 1100-9999
+                var countRange3 = 3; // 3 items for 10000-100000
 
                 // Items: 100-1000
                 for (var i = 0; i < countRange1; i++) {
@@ -194,7 +189,7 @@
                     });
                 }
 
-                // Shuffle the array to mix the ranks, so specific ranges don't always appear at the top/bottom
+                // Shuffle the array to mix the ranks
                 for (var i = data.length - 1; i > 0; i--) {
                     var j = Math.floor(Math.random() * (i + 1));
                     var temp = data[i];
@@ -202,7 +197,7 @@
                     data[j] = temp;
                 }
 
-                // Re-assign ranks after shuffling to ensure they are 1-100
+                // Re-assign ranks after shuffling to ensure they are 1-10
                 for (var i = 0; i < data.length; i++) {
                     data[i].rank = i + 1;
                 }
@@ -220,7 +215,7 @@
         var depositTab = document.getElementById('deposit-tab');
         var withdrawTab = document.getElementById('withdraw-tab');
         var rankingList = document.getElementById('ranking-list');
-        var filterCountDropdown = document.getElementById('filter-count');
+        // Removed filterCountDropdown
         var selectedDayDropdown = document.getElementById('selected-day');
         var selectedMonthDropdown = document.getElementById('selected-month');
         var selectedYearDropdown = document.getElementById('selected-year');
@@ -234,9 +229,9 @@
                 return;
             }
             rankingList.innerHTML = ''; // Clear existing list
-            // Use the selected filter count to limit the displayed items
-            var displayCount = parseInt(filterCountDropdown.value);
-            for (var i = 0; i < Math.min(data.length, displayCount); i++) { // Limit display to selected count
+            // Always display 10 items since filter count dropdown is removed
+            var displayCount = 10; 
+            for (var i = 0; i < Math.min(data.length, displayCount); i++) {
                 var item = data[i];
                 var rankColorClass = '';
                 if (item.rank === 1) {
@@ -268,7 +263,7 @@
 
         // Function to update the header title and tab styles
         function updateUI() {
-            if (!headerTitle || !depositTab || !withdrawTab || !filterCountDropdown || !selectedMonthDropdown || !selectedYearDropdown || !selectedDayDropdown) {
+            if (!headerTitle || !depositTab || !withdrawTab || !selectedMonthDropdown || !selectedYearDropdown || !selectedDayDropdown) {
                 console.error('Iframe Error: One or more UI elements not found!');
                 return;
             }
@@ -301,7 +296,6 @@
         if (depositTab) {
             depositTab.addEventListener('click', function() {
                 activeTab = 'deposit';
-                // No need to clear cache here, generateRankingData will handle it based on key
                 updateUI();
             });
         }
@@ -309,43 +303,13 @@
         if (withdrawTab) {
             withdrawTab.addEventListener('click', function() {
                 activeTab = 'withdraw';
-                // No need to clear cache here, generateRankingData will handle it based on key
                 updateUI();
             });
         }
 
-        // Event listener for filter count dropdown
-        if (filterCountDropdown) {
-            filterCountDropdown.addEventListener('change', function() {
-                // Changing filter count implies new data, so force new cache key
-                // This will effectively create a new cache key that includes the filter count
-                // and thus trigger new data generation.
-                // We'll just let updateUI call generateRankingData with current filter count,
-                // which will naturally lead to a new cache key if filter count is part of it.
-                // For now, the cache key only includes date and tab.
-                // If you want filter count to also force new random data, you'd need to
-                // include it in the cache key generation in generateRankingData.
-                // For simplicity, for now, changing filter count will just re-render
-                // the existing cached data (if valid) or new data (if cache expired).
-                // To force new data on filterCount change, we need to explicitly clear cache.
-                // The cache key now includes day, month, year, and tab, so changing filterCount
-                // will not automatically invalidate the cache for the date.
-                // We need to explicitly remove the cache for the current date/tab combination.
-                var currentDay = selectedDayDropdown.value;
-                var currentMonth = selectedMonthDropdown.value;
-                var currentYear = selectedYearDropdown.value;
-                var currentCacheKey = LOCAL_STORAGE_KEY_PREFIX + activeTab + '_' + currentYear + '_' + currentMonth + '_' + currentDay;
-                var currentTimestampKey = LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX + activeTab + '_' + currentYear + '_' + currentMonth + '_' + currentDay;
-
-                localStorage.removeItem(currentCacheKey);
-                localStorage.removeItem(currentTimestampKey);
-                updateUI();
-            });
-        }
+        // Removed Event listener for filterCountDropdown
 
         // Event listeners for date filter dropdowns (Day, Month, Year)
-        // These will NOT clear the cache directly, allowing the 15-minute cache to work
-        // for the specific date/tab combination.
         if (selectedDayDropdown) {
             selectedDayDropdown.addEventListener('change', updateUI);
         }
