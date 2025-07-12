@@ -1,21 +1,18 @@
+<!DOCTYPE html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOP 10 Ranking Content</title>
     <title>แจ็คพอตล่าสุด & TOP 10</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
     <!-- Google Fonts: Inter (for general body text) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <!-- Google Fonts: Prompt (for Jackpot section as specified by user) -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* Custom CSS for scrollbar and font */
         /* Custom CSS for general body and scrollbar */
         body {
-            font-family: 'Inter', sans-serif;
-            /* Removed the blue gradient background */
             font-family: 'Inter', sans-serif; /* Default font for the page */
             display: flex;
             justify-content: center;
@@ -108,13 +105,8 @@
         }
     </style>
 </head>
-<body class="font-inter text-white">
 <body>
     <div class="w-full max-w-4xl mx-auto p-4 rounded-lg shadow-lg bg-gray-800 border border-gray-700">
-        <div class="flex justify-center mb-6">
-            <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text-shadow-lg">
-                TOP 10 ยอดฝากสูงสุด
-            </h1>
         <!-- The new jackpot section -->
         <div class="jackpot-section mb-6">
             <div class="section-title">🏆 แจ็คพอตล่าสุด 🏆</div>
@@ -126,15 +118,28 @@
         <div class="bg-gray-700 rounded-t-lg p-2 mb-4 shadow-inner">
             <div class="flex flex-wrap -mx-1">
                 <div class="w-1/2 p-1">
-@@ -51,7 +132,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+                    <button id="deposit-tab" class="w-full py-2 px-4 rounded-lg font-bold transition-colors duration-200 bg-blue-600 text-white shadow-md" type="button">
+                        ยอดฝากสูงสุด
+                    </button>
+                </div>
+                <div class="w-1/2 p-1">
+                    <button id="withdraw-tab" class="w-full py-2 px-4 rounded-lg font-bold transition-colors duration-200 bg-gray-600 text-gray-300 hover:bg-gray-500" type="button">
+                        ยอดถอนสูงสุด
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
             <!-- Image cycling in place of date dropdowns -->
             <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-cover cursor-pointer w-full h-auto max-w-full">
-            <!-- Removed selected-month and selected-year dropdowns -->
         </div>
         <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
-@@ -63,6 +143,7 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+                <div>ผู้เล่น</div>
+                <div>จำนวน</div>
+            </div>
+            <div id="ranking-list" class="max-h-96 overflow-y-auto custom-scrollbar">
+                <!-- Ranking items will be populated by JavaScript -->
             </div>
         </div>
     </div>
@@ -142,33 +147,190 @@
     <script>
         console.log('Iframe Script started executing.');
 
-@@ -132,12 +213,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+        // Constants for localStorage caching
+        var LOCAL_STORAGE_KEY_PREFIX = 'top10RankingData_'; // Prefix for data key
+        var LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX = 'top10RankingDataTimestamp_'; // Prefix for timestamp key
+        var CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+        // Image URLs for cycling
+        var imageUrls = [
+            "https://media.mssg.me/thumbnails/medium/w/672b17706d92850073a68140/websites/672b187ba866ec008d808e99/public1_1752208538094.jpeg",
+            "https://media.mssg.me/thumbnails/medium/w/672b17706d92850073a68140/websites/672b187ba866ec008d808e99/public-_1__1752208467020.jpeg",
+            "https://media.mssg.me/thumbnails/medium/w/672b17706d92850073a68140/websites/672b187ba866ec008d808e99/public-_3__(1)_1752208524918.jpeg",
+            "https://media.mssg.me/thumbnails/medium/w/672b17706d92850073a68140/websites/672b187ba866ec008d808e99/public-_2__1752208532759.jpeg"
+        ];
+        var currentImageIndex = 0;
+
+        // Function to generate a random phone number with specified prefix and length
+        function generateRandomPhoneNumber() {
+            var prefixes = ['06', '08', '09'];
+            var randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+            var remainingDigits = '';
+            // Generate 5 more digits to make it 7 digits before XXX
+            for (var i = 0; i < 5; i++) {
+                remainingDigits += Math.floor(Math.random() * 10);
+            }
+            return randomPrefix + remainingDigits + 'XXX'; // Mask last 3 digits for privacy
+        }
+
+        // Function to generate a random username (ID)
+        function generateRandomUsername() {
+            var randomNum = Math.floor(Math.random() * 900) + 100; // Generates a random number between 100 and 999
+            return 'fap1t8m' + randomNum; // Appends the random number to 'fap1t8m'
+        }
+
+        // Function to generate a random amount within a range, formatted
+        function generateRandomAmount(min, max, isDepositTab) { // Added isDepositTab parameter
+            var amount = (Math.random() * (max - min) + min);
+
+            if (isDepositTab) { // Apply specific rounding for deposit tab
+                if (amount < 1000) {
+                    // For amounts under 1000, round to nearest 10
+                    amount = Math.round(amount / 10) * 10;
+                } else {
+                    // For amounts 1000 or above, round to nearest 100
+                    amount = Math.round(amount / 100) * 100;
+                }
+                
+                // Ensure it stays within the specified range after rounding
+                amount = Math.max(min, Math.min(max, amount));
+            }
+            
+            // Format without decimals for deposit, with 2 decimals for withdrawal
+            return parseFloat(amount).toLocaleString('en-US', { 
+                minimumFractionDigits: isDepositTab ? 0 : 2, 
+                maximumFractionDigits: isDepositTab ? 0 : 2 
+            });
+        }
+
+        // Function to generate ranking data based on custom amount ranges, with caching
+        function generateRankingData(activeTab) { // Removed selectedMonth, selectedYear
+            // Create unique cache key based on active tab only
+            var currentCacheKey = LOCAL_STORAGE_KEY_PREFIX + activeTab;
+            var currentTimestampKey = LOCAL_STORAGE_TIMESTAMP_KEY_PREFIX + activeTab;
+
+            var cachedData = localStorage.getItem(currentCacheKey);
             var cachedTimestamp = localStorage.getItem(currentTimestampKey);
             var now = new Date().getTime();
-
-            // --- Simplified future date check logic ---
-            // Since there are no date inputs, data is always considered "current"
-            // The 15-minute cache handles data freshness.
-            // No explicit future date check needed here as user cannot select future dates.
-            // --- End simplified future date check ---
 
             // Check if cached data exists and is still valid for this specific tab
             if (cachedData && cachedTimestamp && (now - parseInt(cachedTimestamp) < CACHE_DURATION_MS)) {
                 console.log('Using cached data for ' + activeTab);
-@@ -205,7 +280,7 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+                return JSON.parse(cachedData);
+            } else {
+                console.log('Generating new data for ' + activeTab);
+                var data = [];
+                var totalItems = 10; // Fixed to 10 items as per "TOP 10"
+                var isDepositTab = (activeTab === 'deposit'); // Determine if it's the deposit tab
+
+                // Distribute items based on percentages for 10 items
+                var countRange1 = 3; // 3 items for 100-1000
+                var countRange2 = 4; // 4 items for 1100-9999
+                var countRange3 = 3; // 3 items for 10000-100000
+
+                // Items: 100-1000
+                for (var i = 0; i < countRange1; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(100, 1000, isDepositTab) // Pass isDepositTab
+                    });
+                }
+
+                // Items: 1100-9999
+                for (var i = 0; i < countRange2; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(1100, 9999, isDepositTab) // Pass isDepositTab
+                    });
+                }
+
+                // Items: 10000-100000
+                for (var i = 0; i < countRange3; i++) {
+                    data.push({
+                        rank: data.length + 1,
+                        phone: generateRandomPhoneNumber(),
+                        username: generateRandomUsername(),
+                        amount: generateRandomAmount(10000, 100000, isDepositTab) // Pass isDepositTab
+                    });
+                }
+
+                // Shuffle the array to mix the ranks
+                for (var i = data.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = data[i];
+                    data[i] = data[j];
+                    data[j] = temp;
+                }
+
+                // Re-assign ranks after shuffling to ensure they are 1-10
+                for (var i = 0; i < data.length; i++) {
+                    data[i].rank = i + 1;
+                }
+
+                // Store new data and timestamp in localStorage with the specific key
+                localStorage.setItem(currentCacheKey, JSON.stringify(data));
+                localStorage.setItem(currentTimestampKey, now.toString());
+                
+                return data;
+            }
         }
 
         // Get DOM elements
-        var headerTitle = document.getElementById('header-title');
         // Removed headerTitle as it's no longer used for dynamic text
         var depositTab = document.getElementById('deposit-tab');
         var withdrawTab = document.getElementById('withdraw-tab');
         var rankingList = document.getElementById('ranking-list');
-@@ -256,23 +331,22 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+        var cyclingImage = document.getElementById('cycling-image'); // New: Get cycling image element
+        // Removed selectedMonthDropdown and selectedYearDropdown
+
+        // Set initial active tab to 'withdraw'
+        var activeTab = 'withdraw'; 
+
+        // Function to render the ranking list based on provided data
+        function renderRankingList(data) {
+            if (!rankingList) {
+                console.error('Iframe Error: rankingList element not found!');
+                return;
+            }
+            rankingList.innerHTML = ''; // Clear existing list
+            // Always display 10 items
+            var displayCount = 10; 
+            for (var i = 0; i < Math.min(data.length, displayCount); i++) {
+                var item = data[i];
+                var rankColorClass = '';
+                if (item.rank === 1) {
+                    rankColorClass = 'bg-yellow-500';
+                } else if (item.rank === 2) {
+                    rankColorClass = 'bg-gray-400';
+                } else if (item.rank === 3) {
+                    rankColorClass = 'bg-orange-500';
+                } else {
+                    rankColorClass = 'bg-gray-600';
+                }
+
+                var itemHtml =
+                    '<div class="flex justify-between items-center border-b border-gray-600 py-2 last:border-b-0">' +
+                        '<div class="flex items-center">' +
+                            '<div class="w-8 h-8 rounded-full flex items-center justify-center mr-3 text-white font-bold text-sm ' + rankColorClass + '">' +
+                                item.rank +
+                            '</div>' +
+                            '<div>' +
+                                '<div class="text-gray-100">' + item.phone + '</div>' +
+                                '<div class="text-gray-400 text-sm">' + item.username + '</div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<b class="font-bold text-lg text-green-400">' + item.amount + '</b>' +
+                    '</div>';
+                rankingList.insertAdjacentHTML('beforeend', itemHtml);
+            }
+        }
 
         // Function to update the header title and tab styles
         function updateUI() {
-            if (!headerTitle || !depositTab || !withdrawTab) { // Removed date dropdowns from check
             if (!depositTab || !withdrawTab) { // Removed headerTitle from check
                 console.error('Iframe Error: One or more UI elements not found!');
                 return;
@@ -179,31 +341,50 @@
 
             // No headerTitle.textContent update needed here
             if (activeTab === 'deposit') {
-                headerTitle.textContent = 'TOP 10 ยอดฝากสูงสุด';
                 depositTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
                 depositTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
                 withdrawTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
                 withdrawTab.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
                 renderRankingList(currentRankingData); // Use the generated/cached data
             } else {
-                headerTitle.textContent = 'TOP 10 ยอดถอนสูงสุด';
                 withdrawTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
                 withdrawTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
                 depositTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
-@@ -296,8 +370,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+                depositTab.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                renderRankingList(currentRankingData); // Use the generated/cached data
+            }
+        }
+
+        // Event listeners for tabs
+        if (depositTab) {
+            depositTab.addEventListener('click', function() {
+                activeTab = 'deposit';
+                updateUI();
             });
         }
 
-        // Removed all event listeners for date filter dropdowns
+        if (withdrawTab) {
+            withdrawTab.addEventListener('click', function() {
+                activeTab = 'withdraw';
+                updateUI();
+            });
+        }
 
         // Function to start cycling through images
         function startImageCycling() {
             if (!cyclingImage || imageUrls.length === 0) {
-@@ -314,13 +386,41 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+                console.error('Cycling image element not found or no image URLs provided!');
+                return;
+            }
+            // Set initial image
+            cyclingImage.src = imageUrls[currentImageIndex];
+
+            // Set interval to change image
+            setInterval(function() {
+                currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+                cyclingImage.src = imageUrls[currentImageIndex];
             }, 4000); // Change image every 4 seconds
         }
-
-        // Removed populateDateFilters function entirely
 
         // Initial render on page load
         document.addEventListener('DOMContentLoaded', function() {
