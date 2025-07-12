@@ -1,128 +1,187 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แจ็คพอตล่าสุด</title>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400&amp;display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Prompt', sans-serif;
-            background: #000; /* คุณอาจจะลบพื้นหลังนี้ออก หรือตั้งเป็น transparent ถ้าอยากให้เห็นพื้นหลังของเซลเพจ */
+import React, { useState, useEffect } from 'react';
+
+// Main App component
+const App = () => {
+  // State to manage the active tab (ยอดฝากสูงสุด or ยอดถอนสูงสุด)
+  const [activeTab, setActiveTab] = useState('deposit'); // 'deposit' or 'withdraw'
+
+  // State for filter values (though not fully functional in this static example)
+  const [filterCount, setFilterCount] = useState('10');
+  const [selectedMonth, setSelectedMonth] = useState('7'); // July is 7
+  const [selectedYear, setSelectedYear] = useState('2025'); // Current year
+
+  // Sample data for ranking (static for this example)
+  const rankingData = [
+    { rank: 1, phone: '0636469XXX', username: 'fap1t8m25', amount: '4,442.00' },
+    { rank: 2, phone: '0839791XXX', username: 'fap1t8m97', amount: '3,500.00' },
+    { rank: 3, phone: '0661501XXX', username: 'fap1t8m122', amount: '2,278.00' },
+    { rank: 4, phone: '0925863XXX', username: 'fap1t8m2', amount: '2,200.00' },
+    { rank: 5, phone: '0930472XXX', username: 'fap1t8m23', amount: '1,590.00' },
+    { rank: 6, phone: '0812636XXX', username: 'fap1t8m148', amount: '1,104.00' },
+    { rank: 7, phone: '0972480XXX', username: 'fap1t8m121', amount: '1,027.00' },
+    { rank: 8, phone: '0961628XXX', username: 'fap1t8m78', amount: '940.00' },
+    { rank: 9, phone: '0985024XXX', username: 'fap1t8m61', amount: '900.00' },
+    { rank: 10, phone: '0935269XXX', username: 'fap1t8m123', amount: '800.00' },
+  ];
+
+  // Generate years for the dropdown
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 8 }, (_, i) => currentYear - 3 + i); // 3 years back, current, 4 years forward
+
+  return (
+    <div className="min-h-screen bg-gray-900 font-inter text-white flex justify-center items-center py-8">
+      {/* Main container for the top spender page */}
+      <div className="w-full max-w-4xl mx-auto p-4 rounded-lg shadow-lg bg-gray-800">
+        {/* Header image */}
+        <div className="flex justify-center mb-6">
+          <img
+            className="w-full max-w-sm rounded-lg"
+            src="https://imagedelivery.net/g1yWpHq5ZqQxQIXvcCDaOA/e50e69ef-dbb2-47a5-e930-e15d676d0f00/public"
+            alt="Top Spender Banner"
+            // Fallback for image loading errors
+            onError={(e) => {
+              e.target.onerror = null; // Prevent infinite loop
+              e.target.src = "https://placehold.co/500x150/333333/FFFFFF?text=Image+Not+Found";
+            }}
+          />
+        </div>
+
+        {/* Tabs for Deposit/Withdraw ranking */}
+        <div className="bg-gradient-to-r from-purple-600 to-indigo-800 rounded-t-lg p-4 mb-4">
+          <div className="flex flex-wrap -mx-1">
+            <div className="w-1/2 p-1">
+              <button
+                className={`w-full py-2 px-4 rounded-lg font-bold transition-colors duration-200 ${
+                  activeTab === 'deposit' ? 'bg-purple-700 text-white shadow-md' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+                type="button"
+                onClick={() => setActiveTab('deposit')}
+              >
+                ยอดฝากสูงสุด
+              </button>
+            </div>
+            <div className="w-1/2 p-1">
+              <button
+                className={`w-full py-2 px-4 rounded-lg font-bold transition-colors duration-200 ${
+                  activeTab === 'withdraw' ? 'bg-purple-700 text-white shadow-md' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                }`}
+                type="button"
+                onClick={() => setActiveTab('withdraw')}
+              >
+                ยอดถอนสูงสุด
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter section */}
+        <div className="bg-gray-700 p-3 rounded-lg mb-4 flex flex-col lg:flex-row justify-between items-center space-y-3 lg:space-y-0 lg:space-x-4">
+          {/* Left side: Filter count */}
+          <div className="flex items-center space-x-2">
+            <div className="hidden lg:block text-gray-300">Filter</div>
+            <select
+              className="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              value={filterCount}
+              onChange={(e) => setFilterCount(e.target.value)}
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+
+          {/* Right side: Month and Year filters */}
+          <div className="flex space-x-2">
+            <select
+              className="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              <option value="">--Select Month--</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <select
+              className="bg-gray-800 text-white rounded-md p-2 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 w-32"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Ranking list */}
+        <div className="bg-gray-700 p-4 rounded-lg">
+          <div className="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
+            <div>ผู้เล่น</div>
+            <div>จำนวน</div>
+          </div>
+          <div className="max-h-96 overflow-y-auto custom-scrollbar">
+            {rankingData.map((item) => (
+              <div key={item.rank} className="flex justify-between items-center border-b border-gray-600 py-2 last:border-b-0">
+                <div className="flex items-center">
+                  {/* Rank number styling based on position */}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center mr-3 text-white font-bold text-sm
+                      ${item.rank === 1 ? 'bg-yellow-500' :
+                        item.rank === 2 ? 'bg-gray-400' :
+                        item.rank === 3 ? 'bg-orange-500' :
+                        'bg-gray-600'
+                      }`}
+                  >
+                    {item.rank}
+                  </div>
+                  <div>
+                    <div className="text-gray-100">{item.phone}</div>
+                    <div className="text-gray-400 text-sm">{item.username}</div>
+                  </div>
+                </div>
+                <b className="font-bold text-lg text-green-400">{item.amount}</b>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Custom CSS for scrollbar and font */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        .font-inter {
+          font-family: 'Inter', sans-serif;
         }
-
-        .jackpot-section {
-            width: 100%;
-            max-width: 100%;
-            background: rgba(0, 0, 0, 0.5); /* พื้นหลังดำโปร่ง 80% */
-            border: 2px solid rgba(40, 214, 124, 0.5); /* ขอบเขียวโปร่ง */
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            box-sizing: border-box;
-            box-shadow: 0 0 10px #28d67c;
-            backdrop-filter: blur(2px); /* เพิ่มความเบลอแบบนุ่มๆ */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
         }
-
-        .section-title {
-            font-size: 20px;
-            color: #FFFF00;
-            margin-bottom: 12px;
-            text-shadow: 0 0 5px #32CD32;
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #333;
+          border-radius: 10px;
         }
-
-        .jackpot {
-            font-size: 36px;
-            font-weight: bold;
-            color: #32CD32;
-            text-shadow: 0 0 10px #32CD32;
-            min-height: 50px;
-            transition: all 0.3s ease;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
         }
-
-        .jackpot.animate {
-            animation: pulse 0.4s ease;
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #555;
         }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .updated-time {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 6px;
-        }
-
-        @media (max-width: 400px) {
-            .jackpot {
-                font-size: 28px;
-            }
-
-            .section-title {
-                font-size: 18px;
-            }
-
-            .updated-time {
-                font-size: 11px;
-            }
-
-            .jackpot-section {
-                padding: 16px;
-                border-radius: 12px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="jackpot-section">
-        <div class="section-title">🏆 แจ็คพอตล่าสุด 🏆</div>
-        <div class="jackpot animate" id="jackpotAmount">5,344,450 บาท</div>
-        <div class="updated-time" id="jackpotUpdateTime">อัปเดตล่าสุดเมื่อ 11 ก.ค. 2568 11:10:41</div>
+      `}</style>
     </div>
+  );
+};
 
-    <script>
-        let jackpot = 4816196; // ค่าเริ่มต้นของแจ็คพอต
-        const jackpotElement = document.getElementById('jackpotAmount');
-        const jackpotUpdateTime = document.getElementById('jackpotUpdateTime');
-
-        function updateJackpot() {
-            const increase = Math.floor(Math.random() * 201) + 300; // เพิ่มค่าสุ่ม 300-500
-            jackpot += increase;
-
-            jackpotElement.classList.remove('animate');
-            void jackpotElement.offsetWidth; // Force reflow to restart animation
-            jackpotElement.textContent = jackpot.toLocaleString('th-TH') + ' บาท';
-            jackpotElement.classList.add('animate');
-
-            const now = new Date();
-            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-            const thTime = new Date(utc + (3600000 * 7)); // UTC+7 for Thailand
-
-            const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-
-            const date = thTime.toLocaleDateString('th-TH', dateOptions).replace('พ.ศ.', ''); // Remove B.E. prefix
-            const time = thTime.toLocaleTimeString('th-TH', timeOptions);
-
-            jackpotUpdateTime.textContent = `อัปเดตล่าสุดเมื่อ ${date} ${time}`;
-        }
-
-        updateJackpot(); // Call once immediately
-        setInterval(updateJackpot, 1000); // Update every 1 second
-    </script>
-</body>
-</html>
+export default App;
