@@ -131,7 +131,9 @@
         </div>
         <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
             <!-- Image cycling in place of date dropdowns -->
-            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-contain cursor-pointer w-full h-40 sm:h-48 md:h-56 lg:h-64">
+            <div class="relative w-full rounded-md overflow-hidden" style="padding-bottom: 30%;"> <!-- Adjusted Aspect Ratio Container (e.g., 3.33:1) -->
+                <img id="cycling-image" src="" alt="Cycling Image" class="absolute inset-0 w-full h-full object-contain cursor-pointer">
+            </div>
         </div>
         <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
             <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
