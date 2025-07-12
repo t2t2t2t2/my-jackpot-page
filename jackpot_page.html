@@ -1,58 +1,245 @@
-<!DOCTYPE html>
-<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ปุ่มสมัครสมาชิก</title>
+    <title>TOP 10 Ranking Content</title>
+    <title>แจ็คพอตล่าสุด & TOP 10</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Prompt -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter (for general body text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Prompt (for Jackpot section as specified by user) -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles for the body to center the button */
+        /* Custom CSS for scrollbar and font */
+        /* Custom CSS for general body and scrollbar */
         body {
-            font-family: 'Prompt', sans-serif; /* Apply Prompt font as default for this standalone page */
+            font-family: 'Inter', sans-serif;
+            /* Removed the blue gradient background */
+            font-family: 'Inter', sans-serif; /* Default font for the page */
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Changed to flex-start to align to top */
             min-height: 100vh;
+            padding: 1rem 0; /* Reduced top and bottom padding */
             margin: 0;
-            background-color: #1a202c; /* Dark background for contrast, similar to previous context */
-            padding: 1rem; /* Add some padding around the button */
+            background: #000; /* Default background, can be transparent if embedded */
         }
-        /* Custom class for the border color, if Tailwind's yellow isn't exact */
-        /* This class is no longer used for the border, but kept if other elements might need it */
-        .border-yellow-custom {
-            border-color: rgb(235, 197, 0);
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #333; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #555; }
+        .text-shadow-lg { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
+
+        /* Jackpot specific styles from user's provided code */
+        .jackpot-section {
+            font-family: 'Prompt', sans-serif; /* Apply Prompt font to jackpot section */
+            width: 100%;
+            max-width: 100%;
+            background: rgba(0, 0, 0, 0.5); /* พื้นหลังดำโปร่ง 80% */
+            border: 2px solid rgba(40, 214, 124, 0.5); /* ขอบเขียวโปร่ง */
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+            box-shadow: 0 0 10px #28d67c;
+            backdrop-filter: blur(2px); /* เพิ่มความเบลอแบบนุ่มๆ */
+            color: #fff; /* Ensure text is visible on dark background */
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #FFFF00;
+            margin-bottom: 12px;
+            text-shadow: 0 0 5px #32CD32;
+        }
+
+        .jackpot {
+            font-size: 36px;
+            font-weight: bold;
+            color: #32CD32;
+            text-shadow: 0 0 10px #32CD32;
+            min-height: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .jackpot.animate {
+            animation: pulse 0.4s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .updated-time {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 400px) {
+            .jackpot {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .updated-time {
+                font-size: 11px;
+            }
+
+            .jackpot-section {
+                padding: 16px;
+                border-radius: 12px;
+            }
         }
     </style>
 </head>
+<body class="font-inter text-white">
 <body>
-    <div class="w-full max-w-sm mx-auto p-4">
-        <!-- Main link button container -->
-        <a target="_blank" rel="noopener noreferrer" href="https://lin.ee/l0PFwiu"
-           class="
-               flex items-center justify-center
-               rounded-[14px] /* Custom border-radius for precision */
-               bg-yellow-400 text-black
-               py-[15px] px-[25px] /* Custom padding for precision */
-               text-base sm:text-lg md:text-xl font-bold /* Adjusted font size for responsiveness */
-               shadow-lg shadow-yellow-400/60
-               transition-all duration-300 ease-in-out
-               hover:bg-yellow-500 hover:shadow-xl
-               w-full /* Make button full width of its parent */
-           ">
-            <!-- Left section with image (border removed) -->
-            <div class="flex items-center pr-[15px]">
-                <div class="w-14 h-14 mr-2.5"> <!-- Increased size to w-14 h-14 -->
-                    <img src="https://cdn-b.heylink.me/media/links/thumbnails/e9b561553baa40eb92f31627002ee5ff.gif" alt="สมัครสมาชิก" class="w-full h-full object-cover rounded-md">
-                </div>
+    <div class="w-full max-w-4xl mx-auto p-4 rounded-lg shadow-lg bg-gray-800 border border-gray-700">
+        <div class="flex justify-center mb-6">
+            <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text-shadow-lg">
+                TOP 10 ยอดฝากสูงสุด
+            </h1>
+        <!-- The new jackpot section -->
+        <div class="jackpot-section mb-6">
+            <div class="section-title">🏆 แจ็คพอตล่าสุด 🏆</div>
+            <div class="jackpot animate" id="jackpotAmount">5,344,450 บาท</div>
+            <div class="updated-time" id="jackpotUpdateTime">อัปเดตล่าสุดเมื่อ 11 ก.ค. 2568 11:10:41</div>
+        </div>
+
+        <!-- Original Ranking Tabs -->
+        <div class="bg-gray-700 rounded-t-lg p-2 mb-4 shadow-inner">
+            <div class="flex flex-wrap -mx-1">
+                <div class="w-1/2 p-1">
+@@ -51,7 +132,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+        <div class="bg-gray-700 p-3 rounded-lg mb-4 flex flex-wrap justify-center items-center gap-2">
+            <!-- Image cycling in place of date dropdowns -->
+            <img id="cycling-image" src="" alt="Cycling Image" class="rounded-md object-cover cursor-pointer w-full h-auto max-w-full">
+            <!-- Removed selected-month and selected-year dropdowns -->
+        </div>
+        <div class="bg-gray-700 p-4 rounded-lg shadow-inner">
+            <div class="flex justify-between items-center mb-3 font-bold text-lg text-gray-200">
+@@ -63,6 +143,7 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
             </div>
-            <!-- Right section with text -->
-            <div class="text-center flex-grow ml-2.5">
-                <div>✨ คลิกเพื่อสมัครสมาชิกที่นี่! ✨</div>
-            </div>
-        </a>
+        </div>
     </div>
+
+    <script>
+        console.log('Iframe Script started executing.');
+
+@@ -132,12 +213,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+            var cachedTimestamp = localStorage.getItem(currentTimestampKey);
+            var now = new Date().getTime();
+
+            // --- Simplified future date check logic ---
+            // Since there are no date inputs, data is always considered "current"
+            // The 15-minute cache handles data freshness.
+            // No explicit future date check needed here as user cannot select future dates.
+            // --- End simplified future date check ---
+
+            // Check if cached data exists and is still valid for this specific tab
+            if (cachedData && cachedTimestamp && (now - parseInt(cachedTimestamp) < CACHE_DURATION_MS)) {
+                console.log('Using cached data for ' + activeTab);
+@@ -205,7 +280,7 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+        }
+
+        // Get DOM elements
+        var headerTitle = document.getElementById('header-title');
+        // Removed headerTitle as it's no longer used for dynamic text
+        var depositTab = document.getElementById('deposit-tab');
+        var withdrawTab = document.getElementById('withdraw-tab');
+        var rankingList = document.getElementById('ranking-list');
+@@ -256,23 +331,22 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+
+        // Function to update the header title and tab styles
+        function updateUI() {
+            if (!headerTitle || !depositTab || !withdrawTab) { // Removed date dropdowns from check
+            if (!depositTab || !withdrawTab) { // Removed headerTitle from check
+                console.error('Iframe Error: One or more UI elements not found!');
+                return;
+            }
+
+            // Generate/retrieve data based on current active tab
+            var currentRankingData = generateRankingData(activeTab); // Removed date parameters
+
+            // No headerTitle.textContent update needed here
+            if (activeTab === 'deposit') {
+                headerTitle.textContent = 'TOP 10 ยอดฝากสูงสุด';
+                depositTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+                depositTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                withdrawTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                withdrawTab.classList.add('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                renderRankingList(currentRankingData); // Use the generated/cached data
+            } else {
+                headerTitle.textContent = 'TOP 10 ยอดถอนสูงสุด';
+                withdrawTab.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+                withdrawTab.classList.remove('bg-gray-600', 'text-gray-300', 'hover:bg-gray-500');
+                depositTab.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+@@ -296,8 +370,6 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+            });
+        }
+
+        // Removed all event listeners for date filter dropdowns
+
+        // Function to start cycling through images
+        function startImageCycling() {
+            if (!cyclingImage || imageUrls.length === 0) {
+@@ -314,13 +386,41 @@ <h1 id="header-title" class="text-2xl lg:text-3xl font-bold text-yellow-400 text
+            }, 4000); // Change image every 4 seconds
+        }
+
+        // Removed populateDateFilters function entirely
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            startImageCycling(); // Start cycling images
+            updateUI(); // Initial UI setup
+            // Initial call for jackpot update and interval
+            updateJackpot(); 
+            setInterval(updateJackpot, 1000); // Update every 1 second
+        });
+
+        // Jackpot specific JavaScript (moved from separate script block)
+        let jackpot = 4816196; // Initial jackpot value
+        const jackpotElement = document.getElementById('jackpotAmount');
+        const jackpotUpdateTime = document.getElementById('jackpotUpdateTime');
+
+        function updateJackpot() {
+            const increase = Math.floor(Math.random() * 201) + 300; // Random increase between 300-500
+            jackpot += increase;
+
+            jackpotElement.classList.remove('animate');
+            void jackpotElement.offsetWidth; // Force reflow to restart animation
+            jackpotElement.textContent = jackpot.toLocaleString('th-TH') + ' บาท';
+            jackpotElement.classList.add('animate');
+
+            const now = new Date();
+            const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+            const thTime = new Date(utc + (3600000 * 7)); // UTC+7 for Thailand
+
+            const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+            const date = thTime.toLocaleDateString('th-TH', dateOptions).replace('พ.ศ.', ''); // Remove B.E. prefix
+            const time = thTime.toLocaleTimeString('th-TH', timeOptions);
+
+            jackpotUpdateTime.textContent = `อัปเดตล่าสุดเมื่อ ${date} ${time}`;
+        }
+    </script>
 </body>
 </html>
