@@ -22,6 +22,7 @@
             margin: 0;
             background: #000; /* Default background, can be transparent if embedded */
         }
+        /* Custom scrollbar styles (still included but may not be used if no internal scroll) */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #333; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
@@ -138,7 +139,7 @@
                 <div>ผู้เล่น</div>
                 <div>จำนวน</div>
             </div>
-            <div id="ranking-list" class="max-h-96 overflow-y-auto custom-scrollbar">
+            <div id="ranking-list" class="custom-scrollbar"> <!-- Removed max-h-96 and overflow-y-auto -->
                 <!-- Ranking items will be populated by JavaScript -->
             </div>
         </div>
