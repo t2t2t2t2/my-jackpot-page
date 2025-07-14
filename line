@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ปุ่มสมัครสมาชิก</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the body to center the button */
+        body {
+            font-family: 'Prompt', sans-serif; /* Apply Prompt font as default for this standalone page */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1a202c; /* Dark background for contrast, similar to previous context */
+            padding: 1rem; /* Add some padding around the button */
+        }
+        /* Custom class for the border color, if Tailwind's yellow isn't exact */
+        /* This class is no longer used for the border, but kept if other elements might need it */
+        .border-yellow-custom {
+            border-color: rgb(235, 197, 0);
+        }
+    </style>
+</head>
+<body>
+    <div class="w-full max-w-sm mx-auto p-4">
+        <!-- Main link button container -->
+        <a target="_blank" rel="noopener noreferrer" href="https://lin.ee/l0PFwiu"
+           class="
+               flex items-center justify-center
+               rounded-[14px] /* Custom border-radius for precision */
+               bg-yellow-400 text-black
+               py-[15px] px-2 sm:px-[25px] /* Adjusted horizontal padding for responsiveness */
+               text-sm sm:text-base md:text-lg lg:text-xl font-bold /* Adjusted font size for responsiveness */
+               shadow-lg shadow-yellow-400/60
+               transition-all duration-300 ease-in-out
+               hover:bg-yellow-500 hover:shadow-xl
+               w-full /* Make button full width of its parent */
+               gap-x-2 /* Added gap for spacing between image and text */
+           ">
+            <!-- Left section with image (no padding-right, no margin-right) -->
+            <div class="flex items-center">
+                <div class="w-12 h-12"> <!-- Reduced size to w-12 h-12 -->
+                    <img src="https://cdn-b.heylink.me/media/links/thumbnails/e9b561553baa40eb92f31627002ee5ff.gif" alt="สมัครสมาชิก" class="w-full h-full object-cover rounded-md">
+                </div>
+            </div>
+            <!-- Right section with text (no margin-left) -->
+            <div class="text-center flex-grow">
+                <div>✨สมัครสมาชิกที่นี่! ✨</div>
+            </div>
+        </a>
+    </div>
+</body>
+</html>
